@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biologie – Sistemul Nervos & Organele de Simț</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --card: #161b27;
+    --card2: #1a2035;
+    --accent: #7ee8a2;
+    --accent2: #5bc4d4;
+    --accent3: #f4a261;
+    --accent4: #e76f51;
+    --text: #e8eaf0;
+    --muted: #8891a8;
+    --border: rgba(126,232,162,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    background: linear-gradient(160deg, #0f1117 0%, #1a2540 60%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    font-style: italic;
+  }
+
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc a {
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-family: 'Source Serif 4', serif;
+    transition: all 0.2s;
+    background: rgba(126,232,162,0.04);
+  }
+  .toc a:hover { background: rgba(126,232,162,0.15); border-color: var(--accent); }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .chapter {
+    margin-bottom: 2.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    overflow: hidden;
+  }
+
+  .chapter-header {
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: background 0.2s;
+  }
+  .chapter-header:hover { background: rgba(255,255,255,0.03); }
+  .chapter-header.open { border-bottom-color: var(--border); }
+
+  .chapter-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--accent);
+    min-width: 2rem;
+    line-height: 1;
+  }
+
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .chapter-arrow {
+    color: var(--muted);
+    font-size: 0.9rem;
+    transition: transform 0.3s;
+  }
+  .chapter-header.open .chapter-arrow { transform: rotate(180deg); }
+
+  .chapter-body {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+  }
+  .chapter-body.open {
+    max-height: 6000px;
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  /* Sections inside a chapter */
+  .section {
+    margin-bottom: 1.4rem;
+  }
+
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(91,196,212,0.2);
+  }
+
+  /* Key-value items */
+  .kv { margin-bottom: 0.5rem; display: flex; gap: 0.6rem; }
+  .kv-key {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    font-size: 0.92rem;
+  }
+  .kv-val { color: var(--text); font-size: 0.92rem; }
+
+  /* Bullet list */
+  ul.bio {
+    list-style: none;
+    padding: 0;
+  }
+  ul.bio li {
+    padding: 0.25rem 0 0.25rem 1.2rem;
+    position: relative;
+    font-size: 0.93rem;
+    color: var(--text);
+  }
+  ul.bio li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.75rem;
+    top: 0.38rem;
+  }
+
+  /* Important callout */
+  .important {
+    background: rgba(244,162,97,0.08);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 0.6rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--accent3);
+  }
+  .important strong { color: var(--accent4); }
+
+  /* Comparison table */
+  table.bio {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin-top: 0.5rem;
+  }
+  table.bio th {
+    background: rgba(126,232,162,0.1);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.bio td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: top;
+  }
+  table.bio tr:last-child td { border-bottom: none; }
+  table.bio tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* Tag badges */
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+  }
+  .tag-green { background: rgba(126,232,162,0.15); color: var(--accent); }
+  .tag-blue  { background: rgba(91,196,212,0.15);  color: var(--accent2); }
+  .tag-orange{ background: rgba(244,162,97,0.15);  color: var(--accent3); }
+  .tag-red   { background: rgba(231,111,81,0.15);  color: var(--accent4); }
+
+  /* Definition */
+  .def {
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Sub-heading */
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin: 1rem 0 0.4rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-style: italic;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Biologie · Sistemul Nervos &amp; Organele de Simț</h1>
+  <p>Rezumat esențial · Clasa a XI-a · 2026</p>
+</div>
+
+<nav class="toc">
+  <a href="#c1">Neuronul</a>
+  <a href="#c2">Celule Gliale</a>
+  <a href="#c3">Clasificarea SN</a>
+  <a href="#c4">Actul Reflex</a>
+  <a href="#c5">Măduva Spinării</a>
+  <a href="#c6">Nervii Spinali</a>
+  <a href="#c7">Encefalul</a>
+  <a href="#c8">Ochiul</a>
+  <a href="#c9">Urechea</a>
+  <a href="#c10">Pielea &amp; Limba &amp; Nasul</a>
+</nav>
+
+<div class="container">
+
+  <!-- 1. NEURONUL -->
+  <div class="chapter" id="c1">
+    <div class="chapter-header open" onclick="toggle(this)">
+      <span class="chapter-num">1</span>
+      <span class="chapter-title">Neuronul — Unitatea morfo-funcțională a SN</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body open">
+      <div class="def">Sistemul nervos este format din <strong>neuroni</strong> + <strong>celule gliale</strong>.</div>
+
+      <div class="section">
+        <div class="section-title">Corpul Neuronal (pericarion)</div>
+        <ul class="bio">
+          <li>Membrană = <strong>neurilemă</strong></li>
+          <li>Citoplasmă = <strong>neuroplasmă</strong></li>
+          <li>Organite specifice: <strong>corpusculii NISSL / corpi tigroidă</strong> (rol: sinteza proteinelor specifice neuronului) și <strong>neurofibrile</strong> (rol: transmiterea impulsului nervos)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Prelungirile Neuronale</div>
+        <table class="bio">
+          <thead><tr><th>Dendrite</th><th>Axonul</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Numeroase, ramificate</td>
+              <td>Prelungire unică, lungă (până la 1 m)</td>
+            </tr>
+            <tr>
+              <td>Conduc impulsul <strong>centripet</strong> (periferie → centru) / aferent</td>
+              <td>Conduce impulsul <strong>centrifug</strong> (centru → periferie) / eferent</td>
+            </tr>
+            <tr>
+              <td>Pot lipsi uneori; conțin NISSL și neurofibrile la bază</td>
+              <td>Prelungire OBLIGATORIE; se termină în <strong>butoni terminali</strong> cu vezicule de mediatori chimici</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Tecile Axonului</div>
+        <ul class="bio">
+          <li><strong>Teaca de mielină</strong> – albă, lucioasă; rol izolator și de protecție</li>
+          <li><strong>Teaca Schwann</strong> – formată din celule gliale; produce teaca de mielină</li>
+          <li><strong>Teaca Henle</strong> – lungă, continuă, conjunctivă; rol nutritiv și protector</li>
+        </ul>
+        <div class="important">Între 2 celule Schwann successive există <strong>noduri Ranvier</strong> → conducere saltatorie (din nod în nod) → viteza de conducere mult mai mare!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CELULE GLIALE -->
+  <div class="chapter" id="c2">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">2</span>
+      <span class="chapter-title">Celulele Gliale</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <ul class="bio">
+        <li>De <strong>10× mai numeroase</strong> decât neuronii (11 miliarde)</li>
+        <li>Se divid intens, ocupând locul neuronilor distruși</li>
+        <li>Hrănesc neuronii și îi susțin</li>
+        <li>Produc teaca de mielină</li>
+      </ul>
+      <div class="important">
+        ⚠ <strong>Neuronii NU se divid!</strong><br>
+        Celulele gliale NU pot genera impulsuri nervoase și NU au funcțiile neuronului.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CLASIFICAREA SN -->
+  <div class="chapter" id="c3">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">3</span>
+      <span class="chapter-title">Clasificarea Sistemului Nervos</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">Din punct de vedere topografic (localizare)</div>
+        <table class="bio">
+          <thead><tr><th>Compartiment</th><th>Structuri</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag-green">SNC</span> – central</td><td>Encefal + Măduvă spinării</td></tr>
+            <tr><td><span class="tag tag-blue">SNP</span> – periferic</td><td>Nervi (leagă cu receptorii și efectorii) + Ganglioni nervoși</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section">
+        <div class="section-title">Din punct de vedere funcțional</div>
+        <table class="bio">
+          <thead><tr><th>Compartiment</th><th>Rol</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag-green">SNS</span> – somatic</td><td>Asigură integrarea organismului în mediul de viață</td></tr>
+            <tr><td><span class="tag tag-orange">SNV</span> – vegetativ/autonom</td><td>Coordonează activitatea inconștientă a organelor interne</td></tr>
+            <tr><td><span class="tag tag-blue">Simpatic</span></td><td>Acționează în condiții <em>neobișnuite</em> (luptă sau fugă = stres → decizii imediate)</td></tr>
+            <tr><td><span class="tag tag-blue">Parasimpatic</span></td><td>Acționează în condiții <em>obișnuite</em> de viață</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ACTUL REFLEX -->
+  <div class="chapter" id="c4">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">4</span>
+      <span class="chapter-title">Actul Reflex și Arcul Reflex</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="def">Actul reflex = procesul fiziologic de răspuns la acțiunea unui stimul care acționează asupra unui anumit câmp receptor.</div>
+      <div class="section">
+        <div class="section-title">Arcul Reflex – 5 componente</div>
+        <ul class="bio">
+          <li><strong>1. Receptorul</strong> – percepe o formă de energie (mecanică, fizică, chimică) și o transformă în impuls nervos</li>
+          <li><strong>2. Calea aferentă</strong> – neuroni sensitivi care conduc informațiile de la receptor la centrul reflex</li>
+          <li><strong>3. Centrul reflex</strong> – formațiune din SNC (encefal/M.S.) care analizează, prelucrează și elaborează comanda</li>
+          <li><strong>4. Calea eferentă</strong> – neuroni motori care duc comanda către efector</li>
+          <li><strong>5. Efectorul</strong> – mușchi sau glandă care execută comanda (contracție musculară sau secreție glandulară)</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="section-title">Tipuri de Reflexe (după nr. de neuroni)</div>
+        <table class="bio">
+          <thead><tr><th>Tip</th><th>Caracteristici</th><th>Exemple</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-green">Monosinaptic</span></td>
+              <td>2 neuroni, 1 sinapsă; timp de latență scurt</td>
+              <td>Reflexul rotulian (extensia gambei), reflexul achilian</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-orange">Polisinaptic</span></td>
+              <td>Min. 3 neuroni; neuron intercalar; timp de latență mai lung</td>
+              <td>Reflexe de flexie, de apărare</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. MĂDUVA SPINĂRII -->
+  <div class="chapter" id="c5">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">5</span>
+      <span class="chapter-title">Măduva Spinării</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">Date generale</div>
+        <ul class="bio">
+          <li>Face parte din SNC (alături de encefal)</li>
+          <li>Localizată în <strong>canalul vertebral</strong> (C1 → L2)</li>
+          <li>Formă cilindrică; turtită antero-posterior (AP)</li>
+          <li>Lungime <strong>40–45 cm</strong>; 2 dilatații (cervicală și lombară)</li>
+          <li>Se termină inferior cu <strong>conus medular</strong> + nervi spinali → <strong>fillum terminale</strong> = „coada de cal"</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="section-title">Meningele Spinale – 3 membrane</div>
+        <ul class="bio">
+          <li><strong>Pia mater</strong> – puternic vascularizată, subțire, în contact direct cu M.S.; rol: hrănire</li>
+          <li><strong>Arahnoidă</strong> – avasculară; între ea și pia mater → <em>spațiu subarahnoidian</em> cu <strong>LCR</strong></li>
+          <li><strong>Dura mater</strong> – în contact cu canalul vertebral; conjunctivă, fibroasă; rol: protecție</li>
+        </ul>
+        <div class="important"><strong>LCR</strong> (Lichid cefalorahidian) – rol de protecție împotriva șocurilor mecanice</div>
+      </div>
+      <div class="section">
+        <div class="section-title">Structura Internă (secțiune transversală)</div>
+        <table class="bio">
+          <thead><tr><th>Substanță</th><th>Localizare</th><th>Alcătuire</th><th>Funcție</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-orange">Cenușie</span></td>
+              <td>Interior, formă H/fluture</td>
+              <td>Corpii neuronilor (coarne: posterioare, laterale, anterioare)</td>
+              <td>Funcția <strong>reflexă</strong> a M.S.</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-blue">Albă</span></td>
+              <td>Exterior, cordoane (a, b, c)</td>
+              <td>Prelungiri neuronale (dendrite + axoni)</td>
+              <td>Funcția de <strong>conducere</strong>: căi ascendente (sensitive), descendente (motorii), de asociație</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section">
+        <div class="section-title">Nucleii din substanța cenușie</div>
+        <ul class="bio">
+          <li><strong>Nuclei sensitivi</strong> (somato-sensitivi) – coarne posterioare → primesc info de la receptori (m. striați)</li>
+          <li><strong>Nuclei motori</strong> (somato-motori) – pleacă comenzi spre efectori (m. striați)</li>
+          <li><strong>Nuclei vegetativi</strong> (viscero-motori) – coarne laterale → comenzi spre m. netezi + glande</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. NERVII SPINALI -->
+  <div class="chapter" id="c6">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">6</span>
+      <span class="chapter-title">Nervii Spinali</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="def">Fac legătura între receptori și efectori.</div>
+      <div class="section">
+        <div class="section-title">Componente</div>
+        <ul class="bio">
+          <li><strong>Rădăcina posterioară</strong> – senzitivă; are ganglion spinal cu corpii neuronilor sensitivi</li>
+          <li><strong>Rădăcina anterioară</strong> – motorie; formată din axonii neuronilor motori din M.S.</li>
+          <li><strong>Trunchiul nervului spinal</strong> – mixt; conține fibre senzitive + motorii</li>
+          <li><strong>Ramuri</strong> – se distribuie la receptori și efectori</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. ENCEFALUL -->
+  <div class="chapter" id="c7">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">7</span>
+      <span class="chapter-title">Encefalul (Creierul)</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="def">Format din: <strong>Trunchi cerebral + Cerebel + Diencefal + Emisfere cerebrale</strong></div>
+
+      <h4>1. Trunchiul Cerebral</h4>
+      <ul class="bio">
+        <li>Continuarea M.S. (= măduvă prelungită)</li>
+        <li>Format din: <strong>bulb rahidian</strong> + <strong>punte Varolio</strong> + <strong>mezencefal</strong></li>
+        <li>Mezencefalul prezintă pedunculi cerebrali → leagă cu emisferele cerebrale</li>
+        <li>Substanța cenușie = nudei sensitivi, motori, vegetativi</li>
+        <li>Substanța albă la periferie și printre nuclei</li>
+      </ul>
+
+      <h4>2. Cerebelul</h4>
+      <ul class="bio">
+        <li>Posterior față de trunchiul cerebral, sub emisferele cerebrale</li>
+        <li>Format din formațiunea mediană = <strong>vermis</strong> + 2 emisfere cerebeloase</li>
+        <li>Se leagă de trunchiul cerebral prin pedunculi cerebeloși (PCS, PCI, PCM)</li>
+        <li>Substanța cenușie la exterior (scoarță) și interior (nuclei); albă doar la interior</li>
+      </ul>
+      <div class="important">
+        <strong>Funcțiile cerebelului:</strong><br>
+        1. Rol în <strong>echilibru</strong><br>
+        2. Rol în reglarea <strong>tonusului muscular</strong><br>
+        3. Rol în coordonarea <strong>mișcărilor fine și precise</strong>
+      </div>
+
+      <h4>3. Emisferele Cerebrale</h4>
+      <ul class="bio">
+        <li>Cea mai mare parte a SNC</li>
+        <li>Separate la vârf de fisura inter-emisferică; unite la bază prin formațiuni de substanță albă</li>
+        <li>Substanța cenușie la exterior = <strong>scoarța cerebrală</strong>; la interior = ganglioni bazali / corpi striați (lipsa lor → Parkinson)</li>
+        <li>Suprafața este plată sau cutată datorită șanțurilor profunde și superficiale</li>
+      </ul>
+      <div class="important">
+        <strong>Pe scoarța cerebrală există:</strong><br>
+        • <strong>Arii sensitive</strong> – primesc info de la organele de simț → senzații tactile, termice, vizuale, auditive<br>
+        • <strong>Arii motorii</strong> – trimit comenzi la efectori (mușchi, glande)<br>
+        • <strong>Arii de asociație</strong> – interpretează senzațiile
+      </div>
+
+      <h4>4. Diencefalul</h4>
+      <ul class="bio">
+        <li>Continuarea trunchiului cerebral, sub emisferele cerebrale</li>
+        <li>Cele mai importante formațiuni: <strong>Talamusul</strong> și <strong>Hipotalamusul</strong></li>
+      </ul>
+      <table class="bio">
+        <thead><tr><th>Talamusul</th><th>Hipotalamusul</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Cea mai mare formațiune a diencefalului</td>
+            <td>Creier vegetativ</td>
+          </tr>
+          <tr>
+            <td>Stație de releu = zonă de sinapsă pe traseul căilor ascendente (sensitive, excepție: vizuale, auditive, olfactive)</td>
+            <td>Coordonează activitățile vegetative: respirație, circulație</td>
+          </tr>
+          <tr>
+            <td>–</td>
+            <td>Conține centrul foamei și sațietății, reglează somnul, comportamentul instinctual</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 8. OCHIUL -->
+  <div class="chapter" id="c8">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">8</span>
+      <span class="chapter-title">Ochiul la Mamifere (Vederea)</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="def">Format din glob ocular + organe anexe (sprâncene, pleoape, conjunctivă). Turtit antero-posterior (AP).</div>
+      <div class="section">
+        <div class="section-title">Tunicile Globului Ocular</div>
+        <table class="bio">
+          <thead><tr><th>Tunică</th><th>Componentă</th><th>Caracteristici</th></tr></thead>
+          <tbody>
+            <tr>
+              <td rowspan="2"><strong>Externă</strong></td>
+              <td>Sclerotica</td>
+              <td>Albă, fibroasă; rol protector (întreruptă în dreptul nervului optic)</td>
+            </tr>
+            <tr>
+              <td>Corneea</td>
+              <td>Transparentă, avasculară; sensibilă la durere și temperatură</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Medie</strong></td>
+              <td>Coroida</td>
+              <td>Brună; bogat vascularizată → rol nutritiv</td>
+            </tr>
+            <tr>
+              <td>Irisul</td>
+              <td>Mușchi radiari (măresc diametrul pupilar) + circulari (micșorează diametrul pupilar)</td>
+            </tr>
+            <tr>
+              <td>Corpii ciliari</td>
+              <td>Mușchi ciliari + procese ciliare (secretă umoarea apoasă); susțin cristalinul prin ligamentul suspensor</td>
+            </tr>
+            <tr>
+              <td><strong>Internă</strong></td>
+              <td>Retina</td>
+              <td>Tunica fotosensibilă; ocupă 2/3 posterioare; conține conuri și bastonașe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Celulele Fotoreceptoare</div>
+        <table class="bio">
+          <thead><tr><th>Celule cu conuri</th><th>Celule cu bastonașe</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Vedere diurnă, colorată, cu detalii</td>
+              <td>Vedere nocturnă și periferică</td>
+            </tr>
+            <tr>
+              <td>5–6 milioane; numeroase în pata galbenă</td>
+              <td>125–130 milioane; predomină la periferia retinei</td>
+            </tr>
+            <tr>
+              <td>În FOVEA CENTRALIS → vedere cea mai clară</td>
+              <td>Lipsesc în fovea centralis</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pete importante pe retină</div>
+        <ul class="bio">
+          <li><strong>Pata galbenă</strong> – pe axul vizual; conține mai ales conuri; imaginea se formează REALĂ, MICĂ, RĂSTURNATĂ</li>
+          <li><strong>Pata oarbă</strong> – medial și inferior față de pata galbenă; NU conține fotoreceptori; locul prin care axonii neuronilor formează nervul optic</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mediile Transparente (străbătute de lumină)</div>
+        <ul class="bio">
+          <li>Corneea → Umoarea apoasă → Cristalinul → Corpul vitros</li>
+          <li><strong>Cristalinul</strong> – lentilă elastică biconvexă; rol în <em>acomodarea vizuală</em> (se aplatizează pentru departe, bombează pentru aproape)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Anomalii de Refracție</div>
+        <table class="bio">
+          <thead><tr><th>Anomalie</th><th>Cauza</th><th>Corecție</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-red">Miopia</span></td>
+              <td>Diametrul AP prea mare SAU puterea de refracție a cristalinului prea mare → imagine <em>în fața</em> retinei</td>
+              <td>Lentile biconcave (divergente)</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-orange">Hipermetropia</span></td>
+              <td>Diametrul AP prea mic SAU puterea de refracție prea mică → imagine <em>în spatele</em> retinei</td>
+              <td>Lentile biconvexe (convergente)</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-blue">Astigmatismul</span></td>
+              <td>Corneea sau cristalinul nu sunt perfect sferice → mai multe puncte de focalizare</td>
+              <td>Lentile cilindrice/torice</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-green">Strabismul</span></td>
+              <td>Unul din cei 6 mușchi externi mai contractat → axele celor 2 ochi nu sunt paralele</td>
+              <td>Lentile speciale / chirurgical</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. URECHEA -->
+  <div class="chapter" id="c9">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">9</span>
+      <span class="chapter-title">Urechea la Mamifere (Auzul &amp; Echilibrul)</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="def">Receptorii pentru auz și echilibru sunt în urechea internă. Celelalte componente conduc și amplifică sunetele.</div>
+      <table class="bio">
+        <thead><tr><th>Regiune</th><th>Structuri</th><th>Funcție</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-green">Urechea Externă</span></td>
+            <td>Pavilion + canal auditiv extern</td>
+            <td>Captarea sunetelor; conducerea undelor sonore spre timpan</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-orange">Urechea Medie</span></td>
+            <td>Cavitate pneumatică (cu aer) în osul temporal; lanț de 3 osișoare: <strong>ciocan → nicovală → scăriță</strong></td>
+            <td>Transmit vibrațiile spre urechea internă. Comunică cu faringele prin <strong>Trompa lui Eustachio</strong> (egalizează presiunea)</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">Urechea Internă</span></td>
+            <td>Labirint osos (3 canale semicirculare osoase + vestibul osos + melc osos) + labirint membranos (plasat în interior)</td>
+            <td>Audiție + echilibru; lichide: <strong>perilimfă</strong> (între labirinte) + <strong>endolimfă</strong> (în labirintul membranos)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Receptorul pentru auz – Organul lui Corti</h4>
+      <ul class="bio">
+        <li>Plasat în urechea internă, în melcul membranos</li>
+        <li>Format din: celule senzoriale cu cili + celule de susținere, plasate pe <strong>membrana bazilară</strong></li>
+        <li>Cilii ating membrana Tectoria → deformare mecanică → impuls nervos</li>
+        <li>Vibr.: fereastra ovală → perilimfă → endolimfă → membrana tectoria → cili se îndoaie</li>
+      </ul>
+
+      <h4>Receptori pentru echilibru</h4>
+      <ul class="bio">
+        <li>Situați în urechea internă → melc membranos</li>
+        <li>La baza canalelor semicirculare → <strong>creste ampulare</strong> (pt. mișcarea circulară a capului)</li>
+        <li>Pt. accelerația liniară → <strong>macule/maculele otolitice</strong> (aparat otolitic) în utriculă și saculă</li>
+        <li><strong>Otolitele</strong> = granule de carbon/calcar; cad pe cili → îndoire → deformare mecanică → impuls</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 10. PIELEA, LIMBA, NASUL -->
+  <div class="chapter" id="c10">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">10</span>
+      <span class="chapter-title">Pielea, Limba &amp; Mucoasa Olfactivă</span>
+      <span class="chapter-arrow">▼</span>
+    </div>
+    <div class="chapter-body">
+      <h4>Pielea (Sensibilitate tactilă, termică, durere)</h4>
+      <ul class="bio">
+        <li>Funcții: protecție mecanică, biologică, izolare termică, reglarea temperaturii, excreție</li>
+        <li>Conține numeroși <strong>receptori tactili</strong>, <strong>termoreceptori</strong> și receptori pentru durere</li>
+        <li>Fibre nervoase conduc impulsurile de la receptori spre măduvă și creier</li>
+      </ul>
+
+      <h4>Limba (Gustul)</h4>
+      <ul class="bio">
+        <li>Simțul gustului este un <strong>simț chimic</strong></li>
+        <li>Chemoreceptorii din mucoasa limbii = <strong>muguri gustativi</strong> (și în mucoasa bucală + faringe)</li>
+        <li>Mugurii gustativi conțin celule chemosensibile în formă de fus + celule de susținere</li>
+        <li>Celulele au cili sensibili la substanțe dizolvate în salivă</li>
+        <li>Muguri gustativi plasați pe <strong>papile gustative</strong></li>
+        <li>Rol: alegerea hranei, evitarea substanțelor dăunătoare, declanșarea reflexelor digestive</li>
+      </ul>
+
+      <h4>Mucoasa Olfactivă (Mirosul)</h4>
+      <ul class="bio">
+        <li>Situată în partea superioară a cavităților nazale</li>
+        <li>Cuprinde celule chemosensibile = neuroni olfactivi (înconjurați de celule de susținere)</li>
+        <li>Neuronii olfactivi au dendrite senzitive cu cili chemosensibili care proemină în mucusul ce acoperă mucoasa</li>
+        <li>Axonii străbat baza cutiei craniene → sinapsă cu <strong>bulbii olfactivi</strong> ai creierului</li>
+        <li>Pot fi mirosi doar substanțele <strong>volatile</strong> și <strong>solubile în apă</strong> (= în mucus)</li>
+        <li>Rol: detectarea diferitelor substanțe (hrană, pericol etc.)</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>Rezumat creat din notițele tale de biologie · Succes la învățat! 🌿</footer>
+
+<script>
+  function toggle(header) {
+    const body = header.nextElementSibling;
+    header.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+  // Open first chapter by default
+  document.addEventListener('DOMContentLoaded', () => {
+    // already open in HTML
+  });
+</script>
+</body>
+</html>
