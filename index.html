@@ -783,18 +783,527 @@
 
 </div>
 
+<!-- ===== QUIZ SECTION ===== -->
+<div id="quiz-section" style="max-width:860px;margin:0 auto;padding:0 1.25rem 5rem;">
+
+  <!-- Setup Screen -->
+  <div id="quiz-setup" class="quiz-card">
+    <div class="quiz-setup-icon">🧠</div>
+    <h2 class="quiz-main-title">Test de Biologie</h2>
+    <p class="quiz-subtitle">Testează-ți cunoștințele din toate lecțiile</p>
+
+    <div class="setup-group">
+      <label class="setup-label">Dificultate</label>
+      <div class="difficulty-row">
+        <button class="diff-btn active" data-diff="usor" onclick="selectDiff(this)">
+          <span class="diff-icon">🌱</span>
+          <span class="diff-name">Ușor</span>
+          <span class="diff-desc">Definiții simple</span>
+        </button>
+        <button class="diff-btn" data-diff="mediu" onclick="selectDiff(this)">
+          <span class="diff-icon">⚡</span>
+          <span class="diff-name">Mediu</span>
+          <span class="diff-desc">Concepte și detalii</span>
+        </button>
+        <button class="diff-btn" data-diff="greu" onclick="selectDiff(this)">
+          <span class="diff-icon">🔥</span>
+          <span class="diff-name">Greu</span>
+          <span class="diff-desc">Comparații complexe</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <label class="setup-label">Număr de întrebări</label>
+      <div class="num-row">
+        <button class="num-btn active" data-n="5" onclick="selectNum(this)">5</button>
+        <button class="num-btn" data-n="10" onclick="selectNum(this)">10</button>
+        <button class="num-btn" data-n="15" onclick="selectNum(this)">15</button>
+        <button class="num-btn" data-n="20" onclick="selectNum(this)">20</button>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">Începe Testul →</button>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quiz-play" class="quiz-card" style="display:none;">
+    <div class="quiz-topbar">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-bar"><div id="quiz-progress-fill"></div></div>
+        <span id="quiz-counter" class="quiz-counter-text"></span>
+      </div>
+      <div id="quiz-score-live" class="quiz-live-score">✓ 0</div>
+    </div>
+
+    <div id="quiz-topic-tag" class="quiz-topic"></div>
+    <div id="quiz-question" class="quiz-question"></div>
+
+    <div id="quiz-options" class="quiz-options"></div>
+
+    <div id="quiz-feedback" class="quiz-feedback" style="display:none;"></div>
+
+    <button id="quiz-next-btn" class="quiz-next-btn" style="display:none;" onclick="nextQuestion()">
+      Următoarea →
+    </button>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="quiz-results" class="quiz-card" style="display:none;">
+    <div id="result-emoji" class="result-emoji"></div>
+    <div id="result-grade" class="result-grade"></div>
+    <div id="result-label" class="result-label"></div>
+    <div id="result-stats" class="result-stats"></div>
+    <div id="result-breakdown" class="result-breakdown"></div>
+    <div class="result-actions">
+      <button class="start-btn" onclick="resetQuiz()">Încearcă din nou</button>
+    </div>
+  </div>
+</div>
+
 <footer>Rezumat creat din notițele tale de biologie · Succes la învățat! 🌿</footer>
 
+<style>
+/* ===== QUIZ STYLES ===== */
+#quiz-section { margin-top: 3rem; }
+
+.quiz-section-heading {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.quiz-section-heading::before, .quiz-section-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 2.5rem 2rem;
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-setup-icon { font-size: 3rem; text-align: center; margin-bottom: 0.5rem; }
+.quiz-main-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+}
+.quiz-subtitle { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; font-style: italic; }
+
+.setup-group { margin-bottom: 1.75rem; }
+.setup-label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 600; }
+
+.difficulty-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.diff-btn {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.diff-btn:hover { border-color: var(--accent); color: var(--text); }
+.diff-btn.active { border-color: var(--accent); background: rgba(126,232,162,0.1); color: var(--accent); }
+.diff-icon { font-size: 1.5rem; }
+.diff-name { font-weight: 600; font-size: 0.95rem; }
+.diff-desc { font-size: 0.75rem; color: var(--muted); }
+
+.num-row { display: flex; gap: 0.6rem; }
+.num-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--muted);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+.num-btn:hover { border-color: var(--accent); color: var(--text); }
+.num-btn.active { border-color: var(--accent); background: rgba(126,232,162,0.1); color: var(--accent); }
+
+.start-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #0f1117;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 0.5rem;
+}
+.start-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.start-btn:active { transform: translateY(0); }
+
+/* Play screen */
+.quiz-topbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.quiz-progress-wrap { flex: 1; }
+.quiz-progress-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; margin-bottom: 0.35rem; }
+#quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; transition: width 0.4s ease; }
+.quiz-counter-text { font-size: 0.8rem; color: var(--muted); }
+.quiz-live-score { font-size: 0.9rem; font-weight: 600; color: var(--accent); white-space: nowrap; background: rgba(126,232,162,0.1); padding: 0.3rem 0.75rem; border-radius: 20px; }
+
+.quiz-topic { display: inline-block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); background: rgba(91,196,212,0.1); padding: 0.25rem 0.75rem; border-radius: 20px; margin-bottom: 1rem; font-weight: 600; }
+
+.quiz-question {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.quiz-options { display: flex; flex-direction: column; gap: 0.65rem; }
+.quiz-opt {
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.93rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--accent2); background: rgba(91,196,212,0.08); }
+.quiz-opt .opt-letter { min-width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 700; color: var(--muted); }
+.quiz-opt.correct { border-color: var(--accent) !important; background: rgba(126,232,162,0.12) !important; color: var(--accent); }
+.quiz-opt.correct .opt-letter { background: var(--accent); color: #0f1117; border-color: var(--accent); }
+.quiz-opt.wrong { border-color: var(--accent4) !important; background: rgba(231,111,81,0.12) !important; color: var(--accent4); }
+.quiz-opt.wrong .opt-letter { background: var(--accent4); color: #fff; border-color: var(--accent4); }
+.quiz-opt:disabled { cursor: default; }
+
+.quiz-feedback {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.quiz-feedback.correct { background: rgba(126,232,162,0.1); border-left: 3px solid var(--accent); color: var(--accent); }
+.quiz-feedback.wrong { background: rgba(231,111,81,0.1); border-left: 3px solid var(--accent4); color: var(--text); }
+
+.quiz-next-btn {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent2);
+  background: rgba(91,196,212,0.08);
+  color: var(--accent2);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-next-btn:hover { background: rgba(91,196,212,0.18); }
+
+/* Results */
+.result-emoji { font-size: 4rem; text-align: center; margin-bottom: 0.5rem; }
+.result-grade {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+.result-label { text-align: center; font-size: 1.1rem; color: var(--muted); margin-bottom: 1.5rem; font-style: italic; }
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.result-stat { text-align: center; }
+.result-stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--accent); }
+.result-stat-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+.result-breakdown {
+  background: var(--card2);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.breakdown-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 600; }
+.breakdown-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; }
+.breakdown-item:last-child { border-bottom: none; }
+.breakdown-icon { font-size: 0.9rem; min-width: 1.2rem; }
+.breakdown-q { flex: 1; color: var(--muted); }
+.breakdown-a { color: var(--accent); font-weight: 600; }
+.breakdown-item.bi-wrong .breakdown-a { color: var(--accent4); }
+</style>
+
 <script>
-  function toggle(header) {
-    const body = header.nextElementSibling;
-    header.classList.toggle('open');
-    body.classList.toggle('open');
+// ===== TOGGLE (chapters) =====
+function toggle(header) {
+  const body = header.nextElementSibling;
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ===== QUIZ DATA =====
+const ALL_QUESTIONS = [
+  // --- USOR ---
+  { diff:'usor', topic:'Neuronul', q:'Care este unitatea morfo-funcțională a sistemului nervos?', opts:['Celula glială','Neuronul','Axonul','Teaca de mielină'], correct:1, explain:'Neuronul este unitatea morfo-funcțională a sistemului nervos.' },
+  { diff:'usor', topic:'Neuronul', q:'Cum se numește membrana corpului neuronal?', opts:['Axolema','Neurilema','Dura mater','Arahnoidă'], correct:1, explain:'Membrana corpului neuronal se numește neurilemă.' },
+  { diff:'usor', topic:'Neuronul', q:'Cum se numește citoplasma neuronului?', opts:['Axoplasmă','Neuroplasmă','Endolimfă','Perilimfă'], correct:1, explain:'Citoplasma neuronului se numește neuroplasmă.' },
+  { diff:'usor', topic:'Neuronul', q:'Ce rol au neurofibrile?', opts:['Sinteza proteinelor','Transmiterea impulsului nervos','Producerea mielinei','Hrănirea neuronului'], correct:1, explain:'Neurofibrile au rol în transmiterea impulsului nervos.' },
+  { diff:'usor', topic:'Neuronul', q:'Prelungirea unică și obligatorie a neuronului se numește:', opts:['Dendrita','Axonul','Corpul celular','Nodul Ranvier'], correct:1, explain:'Axonul este prelungirea unică și obligatorie a neuronului.' },
+  { diff:'usor', topic:'Celule Gliale', q:'Câte celule gliale există față de neuroni?', opts:['La fel de multe','De 10× mai multe','De 2× mai puține','De 5× mai multe'], correct:1, explain:'Celulele gliale sunt de 10 ori mai numeroase decât neuronii (11 miliarde).' },
+  { diff:'usor', topic:'Celule Gliale', q:'Se divid neuronii?', opts:['Da, constant','Da, după traumatisme','Nu, niciodată','Doar în copilărie'], correct:2, explain:'Neuronii NU se divid niciodată.' },
+  { diff:'usor', topic:'Clasificarea SN', q:'Din ce este format SNC?', opts:['Nervi + ganglioni','Encefal + măduvă spinării','Encefal + nervi spinali','Măduvă + ganglioni'], correct:1, explain:'SNC este format din encefal și măduvă spinării.' },
+  { diff:'usor', topic:'Clasificarea SN', q:'Sistemul nervos simpatic acționează în condiții:', opts:['Obișnuite de viață','Neobișnuite (stres, luptă sau fugă)','Somn profund','Digestie lentă'], correct:1, explain:'Simpaticul acționează în condiții neobișnuite de viață (stres, luptă sau fugă).' },
+  { diff:'usor', topic:'Actul Reflex', q:'Câte componente are arcul reflex?', opts:['3','4','5','6'], correct:2, explain:'Arcul reflex are 5 componente: receptor, cale aferentă, centru reflex, cale eferentă, efector.' },
+  { diff:'usor', topic:'Actul Reflex', q:'Efectorul unui arc reflex poate fi:', opts:['Un receptor','Un neuron sensitiv','Un mușchi sau o glandă','Nervul optic'], correct:2, explain:'Efectorul este un mușchi sau o glandă care execută comanda.' },
+  { diff:'usor', topic:'Măduva Spinării', q:'Unde este localizată măduva spinării?', opts:['În cutia craniană','În canalul vertebral','Sub stern','În coloana lombară exclusiv'], correct:1, explain:'Măduva spinării este localizată în canalul vertebral (C1→L2).' },
+  { diff:'usor', topic:'Măduva Spinării', q:'Ce lungime are măduva spinării?', opts:['10–20 cm','20–30 cm','40–45 cm','60–70 cm'], correct:2, explain:'Măduva spinării are lungimea de 40–45 cm.' },
+  { diff:'usor', topic:'Encefalul', q:'Din ce este format encefalul?', opts:['Trunchiul cerebral + cerebel + diencefal + emisfere cerebrale','Măduvă + emisfere','Bulb + punte + emisfere','Talamusul + hipotalamusul'], correct:0, explain:'Encefalul este format din trunchi cerebral, cerebel, diencefal și emisfere cerebrale.' },
+  { diff:'usor', topic:'Cerebel', q:'Care sunt funcțiile cerebelului?', opts:['Vederea și auzul','Echilibrul, tonusul muscular, mișcările fine','Respirația și circulația','Memorarea informațiilor'], correct:1, explain:'Cerebelul are rol în echilibru, reglarea tonusului muscular și coordonarea mișcărilor fine și precise.' },
+  { diff:'usor', topic:'Ochiul', q:'Cum se numește tunica internă a ochiului?', opts:['Sclerotica','Coroida','Retina','Corneea'], correct:2, explain:'Tunica internă a globului ocular este retina (tunica fotosensibilă).' },
+  { diff:'usor', topic:'Ochiul', q:'Celulele cu bastonașe sunt responsabile pentru:', opts:['Vederea colorată','Vederea diurnă detaliată','Vederea nocturnă și periferică','Acomodarea vizuală'], correct:2, explain:'Celulele cu bastonașe sunt responsabile pentru vederea nocturnă și periferică.' },
+  { diff:'usor', topic:'Urechea', q:'Câte regiuni are urechea?', opts:['2','3','4','5'], correct:1, explain:'Urechea prezintă 3 regiuni: externă, medie și internă.' },
+  { diff:'usor', topic:'Urechea', q:'Cum se numește receptorul pentru auz?', opts:['Organul lui Corti','Organul lui Golgi','Macula otolitică','Cresta ampulară'], correct:0, explain:'Receptorul pentru auz se numește Organul lui Corti.' },
+  { diff:'usor', topic:'Organele de Simț', q:'Simțul gustului este un simț:', opts:['Mecanic','Chimic','Termic','Optic'], correct:1, explain:'Simțul gustului este un simț chimic, prin chemoreceptori.' },
+
+  // --- MEDIU ---
+  { diff:'mediu', topic:'Neuronul', q:'Corpusculii NISSL (corpi tigroidă) au rolul de:', opts:['Transmiterea impulsului nervos','Sinteza proteinelor specifice neuronului','Producerea tecii de mielină','Conducerea saltatorie'], correct:1, explain:'Corpusculii NISSL sunt organite specifice neuronului cu rol în sinteza proteinelor specifice.' },
+  { diff:'mediu', topic:'Neuronul', q:'Ce conțin butonii terminali ai axonului?', opts:['Corpusculi NISSL','Vezicule cu mediatori chimici','Noduri Ranvier','Neurofibrile'], correct:1, explain:'Butonii terminali conțin vezicule cu mediatori chimici.' },
+  { diff:'mediu', topic:'Neuronul', q:'Care este rolul tecii de mielină?', opts:['Nutritiv și de protecție','Izolator și de protecție','Producerea mediatorilor','Hrănirea neuronului'], correct:1, explain:'Teaca de mielină are rol izolator și de protecție.' },
+  { diff:'mediu', topic:'Neuronul', q:'Nodurile Ranvier se află între:', opts:['Două dendrite','Două celule Schwann successive','Axon și dendrite','Corpul neuronal și axon'], correct:1, explain:'Nodurile Ranvier se află între 2 celule Schwann successive, permițând conducerea saltatorie.' },
+  { diff:'mediu', topic:'Neuronul', q:'Conducerea saltatorie (din nod în nod) are ca efect:', opts:['Scăderea vitezei de conducere','Creșterea vitezei de conducere','Blocarea impulsului','Inversarea sensului impulsului'], correct:1, explain:'Conducerea saltatorie crește mult viteza de conducere a impulsului nervos.' },
+  { diff:'mediu', topic:'Măduva Spinării', q:'Membrana subarahnoidă conține:', opts:['Sânge','LCR (lichid cefalorahidian)','Endolimfă','Perilimfă'], correct:1, explain:'Între arahnoidă și pia mater se află spațiul subarahnoidian cu LCR.' },
+  { diff:'mediu', topic:'Măduva Spinării', q:'Substanța cenușie din M.S. îndeplinește funcția:', opts:['De conducere','Reflexă','Asociativă exclusiv','De protecție'], correct:1, explain:'Substanța cenușie îndeplinește funcția reflexă a măduvei spinării.' },
+  { diff:'mediu', topic:'Măduva Spinării', q:'Căile ascendente din substanța albă conduc:', opts:['Comenzi motorii','Informații senzitive de la receptori','Comenzi vegetative','Reflexe de postura'], correct:1, explain:'Căile ascendente (sensitive) conduc informații de la receptori la centrele nervoase din M.S.' },
+  { diff:'mediu', topic:'Nervii Spinali', q:'Rădăcina posterioară a nervului spinal este:', opts:['Motorie','Senzitivă','Mixtă','Vegetativă'], correct:1, explain:'Rădăcina posterioară este senzitivă, formată din neuroni sensitivi cu ganglion spinal.' },
+  { diff:'mediu', topic:'Actul Reflex', q:'Reflexul rotulian (extensia gambei) este un reflex:', opts:['Polisinaptic','Monosinaptic','Vegetativ','De apărare'], correct:1, explain:'Reflexul rotulian este monosinaptic: 2 neuroni, 1 sinapsă, timp de latență scurt.' },
+  { diff:'mediu', topic:'Encefalul', q:'Talamusul este o stație de releu pentru:', opts:['Căile motorii descendente','Căile senzitive ascendente (excepție: vizuale, auditive, olfactive)','Comenzile vegetative','Reflexele spinale'], correct:1, explain:'Talamusul este stație de releu (zonă de sinapsă) pe traseul căilor ascendente sensitive, cu excepția celor vizuale, auditive și olfactive.' },
+  { diff:'mediu', topic:'Encefalul', q:'Hipotalamusul este considerat:', opts:['Centru motor principal','Creier vegetativ','Stație de releu senzitiv','Centrul echilibrului'], correct:1, explain:'Hipotalamusul este creierul vegetativ, coordonând activitățile vegetative și instinctuale.' },
+  { diff:'mediu', topic:'Emisferele cerebrale', q:'Lipsa corpilor striați din emisfere duce la:', opts:['Miopie','Boala Parkinson','Surditate','Strabism'], correct:1, explain:'Corpii striați (ganglionii bazali) modulează mișcările scoarței cerebrale; lipsa lor cauzează Parkinson.' },
+  { diff:'mediu', topic:'Ochiul', q:'Care este rolul irisului?', opts:['Protecție externă','Nutriția retinei','Reglarea diametrului pupilar','Acomodarea vizuală'], correct:2, explain:'Irisul are mușchi radiari (măresc pupila) și circulari (micșorează pupila) — reglează cantitatea de lumină.' },
+  { diff:'mediu', topic:'Ochiul', q:'Fovea centralis conține exclusiv:', opts:['Celule cu bastonașe','Celule cu conuri','Ambele tipuri','Neuroni olfactivi'], correct:1, explain:'Fovea centralis (depresiunea din centrul petei galbene) conține exclusiv celule cu conuri → vedere cea mai clară.' },
+  { diff:'mediu', topic:'Ochiul', q:'Pata oarbă NU conține:', opts:['Axoni ai neuronilor','Nerv optic','Fotoreceptori','Fibre nervoase'], correct:2, explain:'Pata oarbă nu conține fotoreceptori; este locul pe unde axonii formează nervul optic.' },
+  { diff:'mediu', topic:'Ochiul', q:'Acomodarea vizuală la distanță implică:', opts:['Bombarea cristalinului','Aplatizarea cristalinului','Contracția m. circulari ai irisului','Dilatarea pupilei'], correct:1, explain:'Pentru vederea la distanță, cristalinul se aplatizează (mușchii radiari ai corpilor ciliari se contractă).' },
+  { diff:'mediu', topic:'Urechea', q:'Trompa lui Eustachio face legătura între urechea medie și:', opts:['Urechea internă','Faringe','Urechea externă','Bulbul rahidian'], correct:1, explain:'Trompa lui Eustachio face legătura cu faringele, cu rol de a egaliza presiunea.' },
+  { diff:'mediu', topic:'Urechea', q:'Organul lui Corti este plasat pe:', opts:['Membrana tectoria','Membrana bazilară','Cresta ampulară','Macula otolitică'], correct:1, explain:'Organul lui Corti este plasat pe membrana bazilară din melcul membranos.' },
+  { diff:'mediu', topic:'Organele de Simț', q:'Mugurii gustativi se află pe:', opts:['Mucoasa olfactivă','Papilele gustative','Sclerotica','Creste ampulare'], correct:1, explain:'Mugurii gustativi sunt plasați pe papilele gustative ale mucoasei limbii.' },
+  { diff:'mediu', topic:'Organele de Simț', q:'Mucoasa olfactivă este situată în:', opts:['Partea inferioară a cavităților nazale','Partea superioară a cavităților nazale','Faringe','Cavitatea bucală'], correct:1, explain:'Mucoasa olfactivă este situată în partea superioară a cavităților nazale.' },
+
+  // --- GREU ---
+  { diff:'greu', topic:'Neuronul', q:'Care este diferența esențială între dendrite și axon în privința conducerii impulsului?', opts:['Dendritele conduc centrifug, axonul centripet','Dendritele conduc centripet (aferent), axonul centrifug (eferent)','Ambele conduc centripet','Nu există diferență de sens'], correct:1, explain:'Dendritele conduc impulsul centripet (de la periferie spre corp), iar axonul centrifug (de la corp spre efector).' },
+  { diff:'greu', topic:'Neuronul', q:'Ce deosebire structurală fundamentală există între teaca Schwann și teaca Henle?', opts:['Schwann e conjunctivă, Henle e formată din celule gliale','Schwann e din celule gliale (produce mielina), Henle e conjunctivă, lungă și continuă','Sunt identice structural','Henle produce mediatori chimici'], correct:1, explain:'Teaca Schwann este formată din celule gliale cu rol în producerea mielinei; teaca Henle este conjunctivă, lungă, continuă, cu rol nutritiv și protector.' },
+  { diff:'greu', topic:'Măduva Spinării', q:'Nucleii vegetativi din substanța cenușie a M.S. se găsesc în coarnele:', opts:['Anterioare','Posterioare','Laterale','Centrale'], correct:2, explain:'Nucleii vegetativi (viscero-motori) corespund coarnelor laterale ale M.S., de unde pleacă comenzile spre mușchi netezi și glande.' },
+  { diff:'greu', topic:'Actul Reflex', q:'Ce diferențiază un reflex polisinaptic de unul monosinaptic din punct de vedere structural?', opts:['Prezența efectuarului','Prezența neuronului intercalar (de asociație) între neuronul sensitiv și cel motor','Absența centrului reflex','Numărul de receptori'], correct:1, explain:'La reflexul polisinaptic, între neuronul sensitiv și cel motor se interpune cel puțin un neuron intercalar (de asociație), crescând numărul sinapselor și timpul de latență.' },
+  { diff:'greu', topic:'Encefalul', q:'Prin ce se leagă cerebelul de trunchiul cerebral?', opts:['Noduri Ranvier','Pedunculi cerebeloși (PCS, PCI, PCM)','Vermis','Fisura inter-emisferică'], correct:1, explain:'Cerebelul se leagă de trunchiul cerebral prin pedunculii cerebeloși: superior (PCS), inferior (PCI), mijlociu (PCM).' },
+  { diff:'greu', topic:'Emisferele cerebrale', q:'Care arii corticale interpretează senzațiile și realizează funcții cognitive complexe?', opts:['Ariile sensitive','Ariile motorii','Ariile de asociație','Nucleii vegetativi'], correct:2, explain:'Ariile de asociație realizează interpretarea diferitelor senzații și funcții cognitive complexe.' },
+  { diff:'greu', topic:'Ochiul', q:'De ce imaginea formată în pata galbenă este mică, reală și răsturnată?', opts:['Pata galbenă nu are fotoreceptori','Deoarece există o dublă refracție a luminii prin mediile transparente','Datorită mușchilor circulari ai irisului','Datorită lipsei bastonașelor'], correct:1, explain:'Imaginea în pata galbenă este mică, reală și răsturnată datorită dublei refracții produse de mediile transparente ale ochiului (cornee, umoare apoasă, cristalin, corp vitros).' },
+  { diff:'greu', topic:'Ochiul', q:'Care este mecanismul corecției miopiei și de ce diferă de cel al hipermetropiei?', opts:['Ambele se corectează cu lentile biconvexe','Miopia: lentile biconcave (divergente) – scad puterea de refracție; Hipermetropia: lentile biconvexe (convergente) – cresc puterea de refracție','Miopia: lentile cilindrice; Hipermetropia: lentile torice','Ambele se corectează cu lentile cilindrice'], correct:1, explain:'La miopie puterea de refracție e prea mare (imagine în față retinei) → lentile divergente; la hipermetropie puterea e prea mică (imagine în spatele retinei) → lentile convergente.' },
+  { diff:'greu', topic:'Urechea', q:'Care este mecanismul de stimulare a Organului lui Corti de la undă sonoră la impuls nervos?', opts:['Unda sonoră → timpan → osișoare → fereastră ovală → perilimfă → endolimfă → membrana tectoria → cili se îndoaie → impuls nervos','Unda sonoră → direct pe retină → impuls nervos','Unda sonoră → macula otolitică → cili → impuls','Unda sonoră → nerv auditiv direct'], correct:0, explain:'Unda sonoră vibrează timpanul → osișoare → fereastra ovală → perilimfă → endolimfă → membrana tectoria → cilii celulelor senzoriale se îndoaie → deformare mecanică → impuls nervos spre creier.' },
+  { diff:'greu', topic:'Urechea', q:'Ce diferență există între receptorii pentru mișcarea circulară a capului și cei pentru accelerație liniară?', opts:['Nu există diferență','Mișcare circulară → creste ampulare (la baza canalelor semicirculare); Accelerație liniară → macule otolitice în utriculă și saculă','Mișcare circulară → macule; Accelerație → creste','Ambii se află în melcul membranos'], correct:1, explain:'Crestele ampulare (la baza canalelor semicirculare) detectează mișcarea circulară a capului; maculele otolitice (din utriculă și saculă) detectează accelerația liniară prin mișcarea otolitelor pe cili.' },
+  { diff:'greu', topic:'Organele de Simț', q:'De ce pot fi percepute mirosuri doar de substanțele volatile și solubile în apă?', opts:['Deoarece mucoasa olfactivă este uscată','Deoarece neuronii olfactivi au axoni scurți','Deoarece substanțele trebuie să fie dizolvate în mucusul care acoperă mucoasa olfactivă pentru a stimula cilii chemosensibili','Deoarece mucoasa olfactivă conține fotoreceptori'], correct:2, explain:'Substanțele trebuie să fie volatile (pentru a ajunge la mucoasă) și solubile în apă (= în mucus), pentru a se dizolva și a putea stimula cilii chemosensibili ai neuronilor olfactivi.' },
+];
+
+// ===== QUIZ STATE =====
+let selectedDiff = 'usor';
+let selectedNum  = 5;
+let questions    = [];
+let current      = 0;
+let score        = 0;
+let answered     = false;
+let history      = []; // {q, correct, chosen}
+
+function selectDiff(btn) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedDiff = btn.dataset.diff;
+}
+
+function selectNum(btn) {
+  document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedNum = parseInt(btn.dataset.n);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  // Open first chapter by default
-  document.addEventListener('DOMContentLoaded', () => {
-    // already open in HTML
+  return a;
+}
+
+function startQuiz() {
+  const pool = ALL_QUESTIONS.filter(q => q.diff === selectedDiff);
+  questions = shuffle(pool).slice(0, Math.min(selectedNum, pool.length));
+  current = 0; score = 0; history = [];
+  document.getElementById('quiz-setup').style.display = 'none';
+  document.getElementById('quiz-play').style.display = 'block';
+  document.getElementById('quiz-results').style.display = 'none';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[current];
+  const total = questions.length;
+
+  // progress
+  const pct = (current / total) * 100;
+  document.getElementById('quiz-progress-fill').style.width = pct + '%';
+  document.getElementById('quiz-counter').textContent = `Întrebarea ${current + 1} din ${total}`;
+  document.getElementById('quiz-score-live').textContent = `✓ ${score}`;
+  document.getElementById('quiz-topic-tag').textContent = q.topic;
+  document.getElementById('quiz-question').textContent = q.q;
+
+  // options — shuffle display but track correct index
+  const letters = ['A','B','C','D'];
+  const indices = shuffle([0,1,2,3].slice(0, q.opts.length));
+  const correctDisplayIdx = indices.indexOf(q.correct);
+
+  const container = document.getElementById('quiz-options');
+  container.innerHTML = '';
+  indices.forEach((origIdx, displayIdx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.dataset.orig = origIdx;
+    btn.dataset.display = displayIdx;
+    btn.innerHTML = `<span class="opt-letter">${letters[displayIdx]}</span>${q.opts[origIdx]}`;
+    btn.onclick = () => selectAnswer(btn, origIdx, q.correct, q.explain);
+    container.appendChild(btn);
   });
+
+  document.getElementById('quiz-feedback').style.display = 'none';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+}
+
+function selectAnswer(btn, chosen, correct, explain) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = chosen === correct;
+  if (isCorrect) score++;
+
+  // disable all
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (parseInt(b.dataset.orig) === correct) b.classList.add('correct');
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+
+  // feedback
+  const fb = document.getElementById('quiz-feedback');
+  fb.style.display = 'block';
+  fb.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = isCorrect
+    ? `✅ <strong>Corect!</strong> ${explain}`
+    : `❌ <strong>Greșit.</strong> ${explain}`;
+
+  document.getElementById('quiz-score-live').textContent = `✓ ${score}`;
+
+  // save to history
+  const q = questions[current];
+  history.push({ q: q.q, isCorrect, chosenText: q.opts[chosen], correctText: q.opts[correct] });
+
+  document.getElementById('quiz-next-btn').style.display = 'block';
+  document.getElementById('quiz-next-btn').textContent = current + 1 < questions.length ? 'Următoarea →' : 'Vezi rezultatele 🎉';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-play').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'block';
+
+  const total = questions.length;
+  const pct = score / total;
+  let grade, emoji, label;
+
+  if (pct >= 0.95)      { grade = '10'; emoji = '🏆'; label = 'Excelent! Ești un adevărat biolog!'; }
+  else if (pct >= 0.85) { grade = '9';  emoji = '🌟'; label = 'Foarte bine! Aproape perfect!'; }
+  else if (pct >= 0.75) { grade = '8';  emoji = '😊'; label = 'Bine! Continuă să înveți!'; }
+  else if (pct >= 0.60) { grade = '7';  emoji = '📚'; label = 'Decent, mai ai de lucrat!'; }
+  else if (pct >= 0.45) { grade = '6';  emoji = '😅'; label = 'Ai trecut, dar revizuiește lecțiile!'; }
+  else                  { grade = '5';  emoji = '💪'; label = 'Nu renunța! Mai citește o dată rezumatul!'; }
+
+  const gradeColor = pct >= 0.75 ? 'var(--accent)' : pct >= 0.55 ? 'var(--accent3)' : 'var(--accent4)';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-grade').style.color = gradeColor;
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-label').textContent = label;
+
+  document.getElementById('result-stats').innerHTML = `
+    <div class="result-stat"><div class="result-stat-num">${score}</div><div class="result-stat-label">Corecte</div></div>
+    <div class="result-stat"><div class="result-stat-num" style="color:var(--accent4)">${total-score}</div><div class="result-stat-label">Greșite</div></div>
+    <div class="result-stat"><div class="result-stat-num" style="color:var(--accent2)">${Math.round(pct*100)}%</div><div class="result-stat-label">Scor</div></div>
+  `;
+
+  // breakdown
+  const items = history.map(h => `
+    <div class="breakdown-item ${h.isCorrect ? '' : 'bi-wrong'}">
+      <span class="breakdown-icon">${h.isCorrect ? '✅' : '❌'}</span>
+      <span class="breakdown-q">${h.q}</span>
+      <span class="breakdown-a">${h.isCorrect ? h.correctText : '✗ ' + h.chosenText + ' → ' + h.correctText}</span>
+    </div>
+  `).join('');
+  document.getElementById('result-breakdown').innerHTML = `<div class="breakdown-title">Detalii răspunsuri</div>${items}`;
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-setup').style.display = 'block';
+}
 </script>
 </body>
 </html>
